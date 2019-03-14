@@ -20,6 +20,7 @@ AUDIO.VISUALIZER = (function () {
         this.isPlaying = false;
         this.autoplay = cfg.autoplay || false;
         this.loop = cfg.loop || false;
+        this.timer = cfg.timer || false;
         this.audio = document.getElementById(cfg.audio) || {};
         this.canvas = document.getElementById(cfg.canvas) || {};
         this.canvasCtx = this.canvas.getContext('2d') || null;
@@ -255,7 +256,9 @@ AUDIO.VISUALIZER = (function () {
 
         this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.renderTime();
+        if (this.timer) {
+            this.renderTime();
+        }
         this.renderText();
         this.renderByStyleType();
     };
@@ -394,6 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
     AUDIO.VISUALIZER.getInstance({
         autoplay: true,
         loop: true,
+        timer: true,
         audio: 'myAudio',
         canvas: 'myCanvas',
         style: 'lounge',
