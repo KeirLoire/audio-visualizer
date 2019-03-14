@@ -273,10 +273,14 @@ AUDIO.VISUALIZER = (function () {
         var correction = 10;
 
         this.canvasCtx.textBaseline = 'top';
-        this.canvasCtx.fillText('by ' + this.author, cx + correction, cy);
+        if (this.author) {
+            this.canvasCtx.fillText('by ' + this.author, cx + correction, cy);
+        }
         this.canvasCtx.font = parseInt(this.font[0], 10) + 8 + 'px ' + this.font[1];
         this.canvasCtx.textBaseline = 'bottom';
-        this.canvasCtx.fillText(this.title, cx + correction, cy);
+        if (this.title) {
+            this.canvasCtx.fillText(this.title, cx + correction, cy);
+        }
         this.canvasCtx.font = this.font.join(' ');
     };
 
