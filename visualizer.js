@@ -6,7 +6,8 @@ AUDIO.VISUALIZER = (function () {
     var INTERVAL = null;
     var FFT_SIZE = 512;
     var TYPE = {
-            'lounge': 'renderLounge'
+            'lounge': 'renderLounge',
+            'flat': 'renderFlat'
         };
 
     /**
@@ -329,6 +330,35 @@ AUDIO.VISUALIZER = (function () {
             this.canvasCtx.translate(cx + this.barSpacing, cy + this.barSpacing);
             this.canvasCtx.rotate(alfa - beta);
             this.canvasCtx.fillRect(x, y, w, h);
+            this.canvasCtx.restore();
+        }
+    };
+
+    /**
+     * @description
+     * Render flat style type.
+     */
+    Visualizer.prototype.renderFlat = function () {
+        var cx = this.canvas.width / 2;
+        var cy = this.canvas.height;
+        var maxBarNum = Math.floor(cx / ((this.barWidth + this.barSpacing) * 2));
+        var slicedPercent = Math.floor((maxBarNum * 25) / 100);
+        var barNum = maxBarNum - slicedPercent;
+        var freqJump = Math.floor(this.frequencyData.length / maxBarNum);
+
+        for (var i = 0; i < barNum; i++) {
+            var amplitude = this.frequencyData[i * freqJump];
+            var x = cx - (i * 10);
+            var x_opposite = cx + (i * 10);
+            var y = cy / 2;
+            var w = this.barWidth;
+            var h = amplitude / 6 + this.barHeight;
+
+            this.canvasCtx.save();
+            this.canvasCtx.fillRect(x, y, w, h);
+            this.canvasCtx.fillRect(x, y, w, -h);
+            this.canvasCtx.fillRect(x_opposite, y, w, h);
+            this.canvasCtx.fillRect(x_opposite, y, w, -h);
             this.canvasCtx.restore();
         }
     };
