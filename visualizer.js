@@ -257,41 +257,7 @@ AUDIO.VISUALIZER = (function () {
 
         this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        if (this.timer) {
-            this.renderTime();
-        }
-        this.renderText();
         this.renderByStyleType();
-    };
-
-    /**
-     * @description
-     * Render audio author and title.
-     */
-    Visualizer.prototype.renderText = function () {
-        var cx = this.canvas.width / 2;
-        var cy = this.canvas.height / 2;
-        var correction = 10;
-
-        this.canvasCtx.textBaseline = 'top';
-        if (this.author) {
-            this.canvasCtx.fillText('by ' + this.author, cx + correction, cy);
-        }
-        this.canvasCtx.font = parseInt(this.font[0], 10) + 8 + 'px ' + this.font[1];
-        this.canvasCtx.textBaseline = 'bottom';
-        if (this.title) {
-            this.canvasCtx.fillText(this.title, cx + correction, cy);
-        }
-        this.canvasCtx.font = this.font.join(' ');
-    };
-
-    /**
-     * @description
-     * Render audio time.
-     */
-    Visualizer.prototype.renderTime = function () {
-        var time = this.minutes + ':' + this.seconds;
-        this.canvasCtx.fillText(time, this.canvas.width / 2 + 10, this.canvas.height / 2 + 40);
     };
 
     /**
@@ -332,6 +298,22 @@ AUDIO.VISUALIZER = (function () {
             this.canvasCtx.fillRect(x, y, w, h);
             this.canvasCtx.restore();
         }
+
+        if (this.timer) {
+            var time = this.minutes + ':' + this.seconds;
+            this.canvasCtx.fillText(time, this.canvas.width / 2, this.canvas.height / 2 + 40);
+        }
+
+        this.canvasCtx.textBaseline = 'top';
+        if (this.author) {
+            this.canvasCtx.fillText('by ' + this.author, cx, cy);
+        }
+        this.canvasCtx.font = parseInt(this.font[0], 10) + 8 + 'px ' + this.font[1];
+        this.canvasCtx.textBaseline = 'bottom';
+        if (this.title) {
+            this.canvasCtx.fillText(this.title, cx, cy);
+        }
+        this.canvasCtx.font = this.font.join(' ');
     };
 
     /**
@@ -340,17 +322,17 @@ AUDIO.VISUALIZER = (function () {
      */
     Visualizer.prototype.renderFlat = function () {
         var cx = this.canvas.width / 2;
-        var cy = this.canvas.height;
-        var maxBarNum = Math.floor(cx / ((this.barWidth + this.barSpacing) * 2));
-        var slicedPercent = Math.floor((maxBarNum * 25) / 100);
+        var cy = this.canvas.height / 2;
+        var maxBarNum = Math.floor(this.canvas.width / (this.barWidth + this.barSpacing)^2);
+        var slicedPercent = Math.floor((maxBarNum * 60) / 100);
         var barNum = maxBarNum - slicedPercent;
-        var freqJump = Math.floor(this.frequencyData.length / maxBarNum);
+        var freqJump = Math.floor(this.frequencyData.length / barNum);
 
         for (var i = 0; i < barNum; i++) {
             var amplitude = this.frequencyData[i * freqJump];
-            var x = cx - (i * 10);
-            var x_opposite = cx + (i * 10);
-            var y = cy / 2;
+            var x = cx - (i * (this.barWidth + this.barSpacing));
+            var x_opposite = cx + (i * (this.barWidth + this.barSpacing));
+            var y = cy;
             var w = this.barWidth;
             var h = amplitude / 6 + this.barHeight;
 
@@ -361,6 +343,22 @@ AUDIO.VISUALIZER = (function () {
             this.canvasCtx.fillRect(x_opposite, y, w, -h);
             this.canvasCtx.restore();
         }
+
+        if (this.timer) {
+            var time = this.minutes + ':' + this.seconds;
+            this.canvasCtx.fillText(time, this.canvas.width / 2, this.canvas.height / 2 - 100);
+        }
+
+        this.canvasCtx.textBaseline = 'top';
+        if (this.author) {
+            this.canvasCtx.fillText('by ' + this.author, cx, cy - 130);
+        }
+        this.canvasCtx.font = parseInt(this.font[0], 10) + 8 + 'px ' + this.font[1];
+        this.canvasCtx.textBaseline = 'bottom';
+        if (this.title) {
+            this.canvasCtx.fillText(this.title, cx, cy - 130);
+        }
+        this.canvasCtx.font = this.font.join(' ');
     };
 
     /**
@@ -371,6 +369,7 @@ AUDIO.VISUALIZER = (function () {
      * {
      *     autoplay: <Bool>,
      *     loop: <Bool>,
+     *     timer: <Bool>,
      *     audio: <String>,
      *     canvas: <String>,
      *     style: <String>,
@@ -434,7 +433,7 @@ document.addEventListener('DOMContentLoaded', function () {
         timer: true,
         audio: 'myAudio',
         canvas: 'myCanvas',
-        style: 'lounge',
+        style: 'flat',
         barWidth: 2,
         barHeight: 2,
         barSpacing: 7,
